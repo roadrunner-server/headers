@@ -61,6 +61,7 @@ func (s *Plugin) Middleware(next http.Handler) http.Handler {
 		if s.cfg.CORS != nil {
 			if r.Method == http.MethodOptions {
 				s.preflightRequest(w)
+
 				return
 			}
 			s.corsHeaders(w)

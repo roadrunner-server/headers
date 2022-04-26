@@ -7,6 +7,8 @@ import (
 
 	"github.com/roadrunner-server/api/v2/plugins/config"
 	"github.com/roadrunner-server/errors"
+	"github.com/roadrunner-server/sdk/v2/utils"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // PluginName contains default service name.
@@ -46,6 +48,13 @@ func (s *Plugin) Init(cfg config.Configurer) error {
 func (s *Plugin) Middleware(next http.Handler) http.Handler {
 	// Define the http.HandlerFunc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if val, ok := r.Context().Value(utils.OtelTracerNameKey).(string); ok {
+			tp := trace.SpanFromContext(r.Context()).TracerProvider()
+			ctx, span := tp.Tracer(val).Start(r.Context(), PluginName)
+			defer span.End()
+			r = r.WithContext(ctx)
+		}
+
 		if s.cfg.Request != nil {
 			for k, v := range s.cfg.Request {
 				r.Header.Add(k, v)

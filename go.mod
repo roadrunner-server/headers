@@ -15,6 +15,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/roadrunner-server/tcplisten v1.2.0 // indirect
+	github.com/roadrunner-server/tcplisten v1.2.1 // indirect
 	go.opentelemetry.io/otel/metric v0.33.0 // indirect
 )

@@ -14,6 +14,8 @@ github.com/roadrunner-server/sdk/v3 v3.0.0 h1:DhSLwTCAP5yzUwgBcUo6M1jK8e1XufxYvp
 github.com/roadrunner-server/sdk/v3 v3.0.0/go.mod h1:R8CbJAIsHjye7asTIl0zLDRl89aIRETLFFfHbmczw04=
 github.com/roadrunner-server/tcplisten v1.2.0 h1:nsiXEEb0zP7vjAsCWNHKpM0HdwFK/KlafFF/2gsTJlg=
 github.com/roadrunner-server/tcplisten v1.2.0/go.mod h1:NhumKvt7dbIKVNZnqR1fA4ET1D8ngIKsg0TxnuJTL6A=
+github.com/roadrunner-server/tcplisten v1.2.1 h1:9hVVMlCRvMPewnJCnfSe/kKAqn2ZOF3wHy+ji0M/NKU=
+github.com/roadrunner-server/tcplisten v1.2.1/go.mod h1:TRJLGwIruiJ7QhmGVRgJFY5Ch72mPoLhLAxuxLnavpU=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.36.4 h1:aUEBEdCa6iamGzg6fuYxDA8ThxvOG240mAvWDU+XLio=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.36.4/go.mod h1:l2MdsbKTocpPS5nQZscqTR9jd8u96VYZdcpF8Sye7mA=

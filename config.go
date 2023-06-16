@@ -31,4 +31,7 @@ type CORSConfig struct {
 
 	// MaxAge of CORS headers in seconds/
 	MaxAge int `mapstructure:"max_age"`
+
+	// Status code to use for successful OPTIONS requests. Default value is http.StatusOK (200).
+	OptionsSuccessStatus int `mapstructure:"options_success_status"`
 }

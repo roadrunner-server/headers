@@ -3,10 +3,11 @@ package headers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"github.com/roadrunner-server/errors"
 	"github.com/roadrunner-server/sdk/v4/utils"
+	"github.com/rs/cors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	jprop "go.opentelemetry.io/contrib/propagators/jaeger"
 	"go.opentelemetry.io/otel/propagation"
@@ -33,6 +34,8 @@ type Plugin struct {
 	cfg *Config
 
 	prop propagation.TextMapPropagator
+
+	cors *cors.Options
 }
 
 // Init must return configure service and return true if service hasStatus enabled. Must return error in case of
@@ -55,11 +58,52 @@ func (p *Plugin) Init(cfg Configurer) error {
 
 	p.prop = propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}, jprop.Jaeger{})
 
+	// Configure CORS options
+	if p.cfg.CORS != nil {
+		p.cors = &cors.Options{
+			// Keep BC with previous implementation
+			OptionsSuccessStatus: http.StatusOK,
+		}
+
+		if p.cfg.CORS.AllowedOrigin != "" {
+			p.cors.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
+		}
+
+		if p.cfg.CORS.AllowedMethods != "" {
+			p.cors.AllowedMethods = strings.Split(p.cfg.CORS.AllowedMethods, ",")
+		}
+
+		if p.cfg.CORS.AllowedHeaders != "" {
+			p.cors.AllowedHeaders = strings.Split(p.cfg.CORS.AllowedHeaders, ",")
+		}
+
+		if p.cfg.CORS.ExposedHeaders != "" {
+			p.cors.ExposedHeaders = strings.Split(p.cfg.CORS.ExposedHeaders, ",")
+		}
+
+		if p.cfg.CORS.MaxAge > 0 {
+			p.cors.MaxAge = p.cfg.CORS.MaxAge
+		}
+
+		if p.cfg.CORS.AllowCredentials != nil {
+			p.cors.AllowCredentials = *p.cfg.CORS.AllowCredentials
+		}
+
+		if p.cfg.CORS.OptionsSuccessStatus != 0 {
+			p.cors.OptionsSuccessStatus = p.cfg.CORS.OptionsSuccessStatus
+		}
+	}
+
 	return nil
 }
 
 // Middleware is HTTP plugin middleware to serve headers
 func (p *Plugin) Middleware(next http.Handler) http.Handler {
+	// Configure CORS handler
+	if p.cors != nil {
+		next = cors.New(*p.cors).Handler(next)
+	}
+
 	// Define the http.HandlerFunc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if val, ok := r.Context().Value(utils.OtelTracerNameKey).(string); ok {
@@ -86,73 +130,10 @@ func (p *Plugin) Middleware(next http.Handler) http.Handler {
 			}
 		}
 
-		if p.cfg.CORS != nil {
-			if r.Method == http.MethodOptions {
-				p.preflightRequest(w)
-
-				return
-			}
-			p.corsHeaders(w)
-		}
-
 		next.ServeHTTP(w, r)
 	})
 }
 
 func (p *Plugin) Name() string {
 	return PluginName
-}
-
-// configure OPTIONS response
-func (p *Plugin) preflightRequest(w http.ResponseWriter) {
-	headers := w.Header()
-
-	headers.Add("Vary", "Origin")
-	headers.Add("Vary", "Access-Control-Request-Method")
-	headers.Add("Vary", "Access-Control-Request-Headers")
-
-	if p.cfg.CORS.AllowedOrigin != "" {
-		headers.Set("Access-Control-Allow-Origin", p.cfg.CORS.AllowedOrigin)
-	}
-
-	if p.cfg.CORS.AllowedHeaders != "" {
-		headers.Set("Access-Control-Allow-Headers", p.cfg.CORS.AllowedHeaders)
-	}
-
-	if p.cfg.CORS.AllowedMethods != "" {
-		headers.Set("Access-Control-Allow-Methods", p.cfg.CORS.AllowedMethods)
-	}
-
-	if p.cfg.CORS.AllowCredentials != nil {
-		headers.Set("Access-Control-Allow-Credentials", strconv.FormatBool(*p.cfg.CORS.AllowCredentials))
-	}
-
-	if p.cfg.CORS.MaxAge > 0 {
-		headers.Set("Access-Control-Max-Age", strconv.Itoa(p.cfg.CORS.MaxAge))
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-// configure CORS headers
-func (p *Plugin) corsHeaders(w http.ResponseWriter) {
-	headers := w.Header()
-
-	headers.Add("Vary", "Origin")
-
-	if p.cfg.CORS.AllowedOrigin != "" {
-		headers.Set("Access-Control-Allow-Origin", p.cfg.CORS.AllowedOrigin)
-	}
-
-	if p.cfg.CORS.AllowedHeaders != "" {
-		headers.Set("Access-Control-Allow-Headers", p.cfg.CORS.AllowedHeaders)
-	}
-
-	if p.cfg.CORS.ExposedHeaders != "" {
-		headers.Set("Access-Control-Expose-Headers", p.cfg.CORS.ExposedHeaders)
-	}
-
-	if p.cfg.CORS.AllowCredentials != nil {
-		headers.Set("Access-Control-Allow-Credentials", strconv.FormatBool(*p.cfg.CORS.AllowCredentials))
-	}
 }

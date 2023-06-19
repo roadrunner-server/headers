@@ -31,11 +31,9 @@ type Configurer interface {
 // Plugin serves headers files. Potentially convert into middleware?
 type Plugin struct {
 	// server configuration (location, forbidden files and etc)
-	cfg *Config
-
+	cfg  *Config
 	prop propagation.TextMapPropagator
-
-	cors *cors.Options
+	cors *cors.Cors
 }
 
 // Init must return configure service and return true if service hasStatus enabled. Must return error in case of
@@ -60,38 +58,39 @@ func (p *Plugin) Init(cfg Configurer) error {
 
 	// Configure CORS options
 	if p.cfg.CORS != nil {
-		p.cors = &cors.Options{
+		opts := cors.Options{
 			// Keep BC with previous implementation
 			OptionsSuccessStatus: http.StatusOK,
+			Debug:                p.cfg.CORS.Debug,
 		}
 
 		if p.cfg.CORS.AllowedOrigin != "" {
-			p.cors.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
+			opts.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
 		}
 
 		if p.cfg.CORS.AllowedMethods != "" {
-			p.cors.AllowedMethods = strings.Split(p.cfg.CORS.AllowedMethods, ",")
+			opts.AllowedMethods = strings.Split(p.cfg.CORS.AllowedMethods, ",")
 		}
 
 		if p.cfg.CORS.AllowedHeaders != "" {
-			p.cors.AllowedHeaders = strings.Split(p.cfg.CORS.AllowedHeaders, ",")
+			opts.AllowedHeaders = strings.Split(p.cfg.CORS.AllowedHeaders, ",")
 		}
 
 		if p.cfg.CORS.ExposedHeaders != "" {
-			p.cors.ExposedHeaders = strings.Split(p.cfg.CORS.ExposedHeaders, ",")
+			opts.ExposedHeaders = strings.Split(p.cfg.CORS.ExposedHeaders, ",")
 		}
 
 		if p.cfg.CORS.MaxAge > 0 {
-			p.cors.MaxAge = p.cfg.CORS.MaxAge
+			opts.MaxAge = p.cfg.CORS.MaxAge
 		}
 
-		if p.cfg.CORS.AllowCredentials != nil {
-			p.cors.AllowCredentials = *p.cfg.CORS.AllowCredentials
-		}
+		opts.AllowCredentials = p.cfg.CORS.AllowCredentials
 
 		if p.cfg.CORS.OptionsSuccessStatus != 0 {
-			p.cors.OptionsSuccessStatus = p.cfg.CORS.OptionsSuccessStatus
+			opts.OptionsSuccessStatus = p.cfg.CORS.OptionsSuccessStatus
 		}
+
+		p.cors = cors.New(opts)
 	}
 
 	return nil
@@ -101,7 +100,7 @@ func (p *Plugin) Init(cfg Configurer) error {
 func (p *Plugin) Middleware(next http.Handler) http.Handler {
 	// Configure CORS handler
 	if p.cors != nil {
-		next = cors.New(*p.cors).Handler(next)
+		next = p.cors.Handler(next)
 	}
 
 	// Define the http.HandlerFunc

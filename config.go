@@ -16,22 +16,18 @@ type Config struct {
 type CORSConfig struct {
 	// AllowedOrigin: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
 	AllowedOrigin string `mapstructure:"allowed_origin"`
-
 	// AllowedHeaders: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
 	AllowedHeaders string `mapstructure:"allowed_headers"`
-
 	// AllowedMethods: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
 	AllowedMethods string `mapstructure:"allowed_methods"`
-
 	// AllowCredentials https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
-	AllowCredentials *bool `mapstructure:"allow_credentials"`
-
+	AllowCredentials bool `mapstructure:"allow_credentials"`
 	// ExposeHeaders:  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
 	ExposedHeaders string `mapstructure:"exposed_headers"`
-
 	// MaxAge of CORS headers in seconds/
 	MaxAge int `mapstructure:"max_age"`
-
 	// Status code to use for successful OPTIONS requests. Default value is http.StatusOK (200).
 	OptionsSuccessStatus int `mapstructure:"options_success_status"`
+	// Debug CORS requests
+	Debug bool `mapstructure:"debug"`
 }

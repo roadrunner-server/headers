@@ -65,18 +65,26 @@ func (p *Plugin) Init(cfg Configurer) error {
 		}
 
 		if p.cfg.CORS.AllowedOrigin != "" {
+			// trim all spaces
+			p.cfg.CORS.AllowedOrigin = strings.Trim(p.cfg.CORS.AllowedOrigin, " ")
 			opts.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
 		}
 
 		if p.cfg.CORS.AllowedMethods != "" {
+			// trim all spaces
+			p.cfg.CORS.AllowedMethods = strings.Trim(p.cfg.CORS.AllowedMethods, " ")
 			opts.AllowedMethods = strings.Split(p.cfg.CORS.AllowedMethods, ",")
 		}
 
 		if p.cfg.CORS.AllowedHeaders != "" {
+			// trim all spaces
+			p.cfg.CORS.AllowedHeaders = strings.Trim(p.cfg.CORS.AllowedHeaders, " ")
 			opts.AllowedHeaders = strings.Split(p.cfg.CORS.AllowedHeaders, ",")
 		}
 
 		if p.cfg.CORS.ExposedHeaders != "" {
+			// trim all spaces
+			p.cfg.CORS.ExposedHeaders = strings.Trim(p.cfg.CORS.ExposedHeaders, " ")
 			opts.ExposedHeaders = strings.Split(p.cfg.CORS.ExposedHeaders, ",")
 		}
 

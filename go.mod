@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/roadrunner-server/errors v1.2.0
-	github.com/roadrunner-server/sdk/v4 v4.3.1
+	github.com/roadrunner-server/sdk/v4 v4.3.2
 	github.com/rs/cors v1.9.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
 	go.opentelemetry.io/contrib/propagators/jaeger v1.17.0

@@ -7,12 +7,12 @@ toolchain go1.21.1
 replace github.com/roadrunner-server/headers/v4 => ../
 
 require (
-	github.com/roadrunner-server/config/v4 v4.4.5
+	github.com/roadrunner-server/config/v4 v4.4.6
 	github.com/roadrunner-server/endure/v2 v2.4.2
-	github.com/roadrunner-server/headers/v4 v4.2.5
-	github.com/roadrunner-server/http/v4 v4.4.1
-	github.com/roadrunner-server/logger/v4 v4.2.3
-	github.com/roadrunner-server/server/v4 v4.4.1
+	github.com/roadrunner-server/headers/v4 v4.2.6
+	github.com/roadrunner-server/http/v4 v4.4.2
+	github.com/roadrunner-server/logger/v4 v4.2.4
+	github.com/roadrunner-server/server/v4 v4.4.2
 	github.com/stretchr/testify v1.8.4
 )
 
@@ -72,7 +72,7 @@ require (
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/mod v0.13.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.16.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect

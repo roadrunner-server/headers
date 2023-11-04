@@ -73,9 +73,9 @@ func (p *Plugin) Init(cfg Configurer) error {
 		}
 
 		// if this option is set, the content of `AllowedOrigins` is ignored
-		if p.cfg.CORS.AllowedOriginWildcard != "" {
+		if p.cfg.CORS.AllowedOriginRegex != "" {
 			var err error
-			p.allowedOriginRegex, err = regexp.Compile(p.cfg.CORS.AllowedOriginWildcard)
+			p.allowedOriginRegex, err = regexp.Compile(p.cfg.CORS.AllowedOriginRegex)
 			if err != nil {
 				return errors.E(op, err)
 			}

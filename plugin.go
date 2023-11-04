@@ -3,6 +3,7 @@ package headers
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/roadrunner-server/errors"
@@ -68,6 +69,13 @@ func (p *Plugin) Init(cfg Configurer) error {
 			// trim all spaces
 			p.cfg.CORS.AllowedOrigin = strings.Trim(p.cfg.CORS.AllowedOrigin, " ")
 			opts.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
+		}
+
+		// if this option is set, the content of `AllowedOrigins` is ignored
+		if p.cfg.CORS.AllowedOriginWildcard != "" {
+			opts.AllowOriginFunc = func(origin string) bool {
+				return regexp.MustCompile(p.cfg.CORS.AllowedOriginWildcard).MatchString(origin)
+			}
 		}
 
 		if p.cfg.CORS.AllowedMethods != "" {

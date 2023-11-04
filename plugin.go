@@ -32,9 +32,10 @@ type Configurer interface {
 // Plugin serves headers files. Potentially convert into middleware?
 type Plugin struct {
 	// server configuration (location, forbidden files and etc)
-	cfg  *Config
-	prop propagation.TextMapPropagator
-	cors *cors.Cors
+	cfg                *Config
+	prop               propagation.TextMapPropagator
+	cors               *cors.Cors
+	allowedOriginRegex *regexp.Regexp
 }
 
 // Init must return configure service and return true if service hasStatus enabled. Must return error in case of
@@ -73,8 +74,13 @@ func (p *Plugin) Init(cfg Configurer) error {
 
 		// if this option is set, the content of `AllowedOrigins` is ignored
 		if p.cfg.CORS.AllowedOriginWildcard != "" {
+			var err error
+			p.allowedOriginRegex, err = regexp.Compile(p.cfg.CORS.AllowedOriginWildcard)
+			if err != nil {
+				return errors.E(op, err)
+			}
 			opts.AllowOriginFunc = func(origin string) bool {
-				return regexp.MustCompile(p.cfg.CORS.AllowedOriginWildcard).MatchString(origin)
+				return p.allowedOriginRegex.MatchString(origin)
 			}
 		}
 

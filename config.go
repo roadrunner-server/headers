@@ -13,7 +13,8 @@ type Config struct {
 // CORSConfig headers configuration.
 type CORSConfig struct {
 	// AllowedOrigin: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-	AllowedOrigin string `mapstructure:"allowed_origin"`
+	AllowedOrigin      string `mapstructure:"allowed_origin"`
+	AllowedOriginRegex string `mapstructure:"allowed_origin_regex"`
 	// AllowedHeaders: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
 	AllowedHeaders string `mapstructure:"allowed_headers"`
 	// AllowedMethods: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods

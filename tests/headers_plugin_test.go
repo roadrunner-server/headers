@@ -2,6 +2,7 @@ package headers
 
 import (
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -9,8 +10,6 @@ import (
 	"syscall"
 	"testing"
 	"time"
-
-	"log/slog"
 
 	"github.com/roadrunner-server/config/v4"
 	"github.com/roadrunner-server/endure/v2"
@@ -259,6 +258,75 @@ func resHeaders(t *testing.T) {
 }
 
 func TestCORSHeaders(t *testing.T) {
+	cont := endure.New(slog.LevelDebug)
+
+	cfg := &config.Plugin{
+		Version: "2023.2.0",
+		Path:    "configs/.rr-cors-headers.yaml",
+		Prefix:  "rr",
+	}
+
+	err := cont.RegisterAll(
+		cfg,
+		&logger.Plugin{},
+		&server.Plugin{},
+		&httpPlugin.Plugin{},
+		&headers.Plugin{},
+	)
+	assert.NoError(t, err)
+
+	err = cont.Init()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ch, err := cont.Serve()
+	assert.NoError(t, err)
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+
+	stopCh := make(chan struct{}, 1)
+
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case e := <-ch:
+				assert.Fail(t, "error", e.Error.Error())
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+			case <-sig:
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+				return
+			case <-stopCh:
+				// timeout
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+				return
+			}
+		}
+	}()
+
+	time.Sleep(time.Second)
+	t.Run("CORSHeaders", corsHeaders)
+	t.Run("CORSHeadersPass", corsHeadersPass)
+
+	stopCh <- struct{}{}
+	wg.Wait()
+}
+
+func TestCORSHeadersRegex(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	cfg := &config.Plugin{

@@ -319,8 +319,8 @@ func TestCORSHeaders(t *testing.T) {
 	}()
 
 	time.Sleep(time.Second)
-	t.Run("CORSHeaders", corsHeaders)
-	t.Run("CORSHeadersPass", corsHeadersPass)
+	t.Run("CORSHeaders", corsHeaders("*"))
+	t.Run("CORSHeadersPass", corsHeadersPass("*"))
 
 	stopCh <- struct{}{}
 	wg.Wait()
@@ -331,7 +331,7 @@ func TestCORSHeadersRegex(t *testing.T) {
 
 	cfg := &config.Plugin{
 		Version: "2023.2.0",
-		Path:    "configs/.rr-cors-headers.yaml",
+		Path:    "configs/.rr-cors-headers-regex.yaml",
 		Prefix:  "rr",
 	}
 
@@ -388,61 +388,65 @@ func TestCORSHeadersRegex(t *testing.T) {
 	}()
 
 	time.Sleep(time.Second)
-	t.Run("CORSHeaders", corsHeaders)
-	t.Run("CORSHeadersPass", corsHeadersPass)
+	t.Run("CORSHeaders", corsHeaders("http://127.0.0.1:10"))
+	t.Run("CORSHeadersPass", corsHeadersPass("http://127.0.0.1:10"))
 
 	stopCh <- struct{}{}
 	wg.Wait()
 }
 
-func corsHeadersPass(t *testing.T) {
-	req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:22855", nil)
-	req.Header.Add("Origin", "http://foo.com")
-	assert.NoError(t, err)
+func corsHeadersPass(expOrigin string) func(t *testing.T) {
+	return func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:22855", nil)
+		req.Header.Add("Origin", "http://127.0.0.1:10")
+		assert.NoError(t, err)
 
-	r, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+		r, err := http.DefaultClient.Do(req)
+		assert.NoError(t, err)
 
-	assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
-	assert.Equal(t, "*", r.Header.Get("Access-Control-Allow-Origin"))
-	assert.Equal(t, "Cache-Control, Content-Language, Content-Type, Expires, Last-Modified, Pragma", r.Header.Get("Access-Control-Expose-Headers"))
+		assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
+		assert.Equal(t, expOrigin, r.Header.Get("Access-Control-Allow-Origin"))
+		assert.Equal(t, "Cache-Control, Content-Language, Content-Type, Expires, Last-Modified, Pragma", r.Header.Get("Access-Control-Expose-Headers"))
 
-	_, err = io.ReadAll(r.Body)
-	assert.NoError(t, err)
-	assert.Equal(t, 200, r.StatusCode)
+		_, err = io.ReadAll(r.Body)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, r.StatusCode)
 
-	err = r.Body.Close()
-	assert.NoError(t, err)
+		err = r.Body.Close()
+		assert.NoError(t, err)
+	}
 }
 
-func corsHeaders(t *testing.T) {
-	// PREFLIGHT
-	req, err := http.NewRequest(http.MethodOptions, "http://127.0.0.1:22855", nil)
-	req.Header.Add("Access-Control-Request-Method", "GET")
-	req.Header.Add("Access-Control-Request-Headers", "origin, x-requested-with")
-	req.Header.Add("Origin", "http://foo.com")
-	assert.NoError(t, err)
+func corsHeaders(expOrigin string) func(t *testing.T) {
+	return func(t *testing.T) {
+		// PREFLIGHT
+		req, err := http.NewRequest(http.MethodOptions, "http://127.0.0.1:22855", nil)
+		req.Header.Add("Access-Control-Request-Method", "GET")
+		req.Header.Add("Access-Control-Request-Headers", "origin, x-requested-with")
+		req.Header.Add("Origin", "http://127.0.0.1:10")
+		assert.NoError(t, err)
 
-	r, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+		r, err := http.DefaultClient.Do(req)
+		assert.NoError(t, err)
 
-	/*
-		Access-Control-Allow-Origin: https://foo.bar.org
-		Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE
-		Access-Control-Max-Age: 86400
-	*/
+		/*
+			Access-Control-Allow-Origin: https://foo.bar.org
+			Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE
+			Access-Control-Max-Age: 86400
+		*/
 
-	assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
-	assert.Equal(t, "Origin, X-Requested-With", r.Header.Get("Access-Control-Allow-Headers"))
-	assert.Equal(t, "GET", r.Header.Get("Access-Control-Allow-Methods"))
-	assert.Equal(t, "*", r.Header.Get("Access-Control-Allow-Origin"))
-	assert.Equal(t, "600", r.Header.Get("Access-Control-Max-Age"))
-	assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
+		assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
+		assert.Equal(t, "Origin, X-Requested-With", r.Header.Get("Access-Control-Allow-Headers"))
+		assert.Equal(t, "GET", r.Header.Get("Access-Control-Allow-Methods"))
+		assert.Equal(t, expOrigin, r.Header.Get("Access-Control-Allow-Origin"))
+		assert.Equal(t, "600", r.Header.Get("Access-Control-Max-Age"))
+		assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
 
-	_, err = io.ReadAll(r.Body)
-	assert.NoError(t, err)
-	assert.Equal(t, 200, r.StatusCode)
+		_, err = io.ReadAll(r.Body)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, r.StatusCode)
 
-	err = r.Body.Close()
-	assert.NoError(t, err)
+		err = r.Body.Close()
+		assert.NoError(t, err)
+	}
 }

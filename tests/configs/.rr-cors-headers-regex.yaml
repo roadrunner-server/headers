@@ -15,7 +15,7 @@ http:
   # Additional HTTP headers and CORS control.
   headers:
     cors:
-      allowed_origin_regex: "^http?://(localhost|127\.0\.0\.1)(:[0-9]+)?$"
+      allowed_origin_regex: "^http?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
       allowed_headers: "*"
       allowed_methods: "GET,POST,PUT,DELETE"
       allow_credentials: true

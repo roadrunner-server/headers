@@ -6,7 +6,7 @@ toolchain go1.21.5
 
 require (
 	github.com/roadrunner-server/errors v1.3.0
-	github.com/roadrunner-server/sdk/v4 v4.5.4
+	github.com/roadrunner-server/sdk/v4 v4.5.5
 	github.com/rs/cors v1.10.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.46.1
 	go.opentelemetry.io/contrib/propagators/jaeger v1.21.1

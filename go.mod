@@ -19,5 +19,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/roadrunner-server/tcplisten v1.4.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 )

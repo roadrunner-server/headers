@@ -8,7 +8,7 @@ require (
 	github.com/roadrunner-server/headers/v4 v4.2.18
 	github.com/roadrunner-server/http/v4 v4.6.0
 	github.com/roadrunner-server/logger/v4 v4.3.0
-	github.com/roadrunner-server/server/v4 v4.5.9
+	github.com/roadrunner-server/server/v4 v4.7.0
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -51,7 +51,7 @@ require (
 	github.com/roadrunner-server/api/v4 v4.12.0 // indirect
 	github.com/roadrunner-server/errors v1.4.0 // indirect
 	github.com/roadrunner-server/goridge/v3 v3.8.2 // indirect
-	github.com/roadrunner-server/sdk/v4 v4.7.0 // indirect
+	github.com/roadrunner-server/sdk/v4 v4.7.1 // indirect
 	github.com/roadrunner-server/tcplisten v1.4.0 // indirect
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect

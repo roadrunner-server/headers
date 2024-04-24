@@ -24,7 +24,7 @@ func TestHeadersInit(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	cfg := &config.Plugin{
-		Version: "2.9.0",
+		Version: "2024.1.0",
 		Path:    "configs/.rr-headers-init.yaml",
 		Prefix:  "rr",
 	}
@@ -90,7 +90,7 @@ func TestRequestHeaders(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	cfg := &config.Plugin{
-		Version: "2.9.0",
+		Version: "2024.1.0",
 		Path:    "configs/.rr-req-headers.yaml",
 		Prefix:  "rr",
 	}
@@ -175,7 +175,7 @@ func TestResponseHeaders(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	cfg := &config.Plugin{
-		Version: "2.9.0",
+		Version: "2024.1.0",
 		Path:    "configs/.rr-res-headers.yaml",
 		Prefix:  "rr",
 	}
@@ -436,7 +436,7 @@ func corsHeaders(expOrigin string) func(t *testing.T) {
 		*/
 
 		assert.Equal(t, "true", r.Header.Get("Access-Control-Allow-Credentials"))
-		assert.Equal(t, "Origin, X-Requested-With", r.Header.Get("Access-Control-Allow-Headers"))
+		assert.Equal(t, "origin, x-requested-with", r.Header.Get("Access-Control-Allow-Headers"))
 		assert.Equal(t, "GET", r.Header.Get("Access-Control-Allow-Methods"))
 		assert.Equal(t, expOrigin, r.Header.Get("Access-Control-Allow-Origin"))
 		assert.Equal(t, "600", r.Header.Get("Access-Control-Max-Age"))

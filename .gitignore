@@ -15,3 +15,4 @@
 vendor/
 .idea
 .DS_Store
+tests/php_test_files/composer.lock

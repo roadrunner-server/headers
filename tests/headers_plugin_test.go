@@ -13,7 +13,7 @@ import (
 
 	"github.com/roadrunner-server/config/v4"
 	"github.com/roadrunner-server/endure/v2"
-	"github.com/roadrunner-server/headers/v4"
+	"github.com/roadrunner-server/headers/v5"
 	httpPlugin "github.com/roadrunner-server/http/v4"
 	"github.com/roadrunner-server/logger/v4"
 	"github.com/roadrunner-server/server/v4"

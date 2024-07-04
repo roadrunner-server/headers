@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	rrcontext "github.com/roadrunner-server/context"
 	"github.com/roadrunner-server/errors"
-	"github.com/roadrunner-server/sdk/v4/utils"
 	"github.com/rs/cors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	jprop "go.opentelemetry.io/contrib/propagators/jaeger"
@@ -25,20 +25,20 @@ const (
 type Configurer interface {
 	// UnmarshalKey takes a single key and unmarshal it into a Struct.
 	UnmarshalKey(name string, out any) error
-	// Has checks if config section exists.
+	// Has checks if a config section exists.
 	Has(name string) bool
 }
 
-// Plugin serves headers files. Potentially convert into middleware?
+// Plugin serves header files. Potentially convert into middleware?
 type Plugin struct {
-	// server configuration (location, forbidden files and etc)
+	// server configuration (location, forbidden files etc.)
 	cfg                *Config
 	prop               propagation.TextMapPropagator
 	cors               *cors.Cors
 	allowedOriginRegex *regexp.Regexp
 }
 
-// Init must return configure service and return true if service hasStatus enabled. Must return error in case of
+// Init must return configure service and return true if the service has Status=enabled. Must return an error in case of
 // misconfiguration. Services must not be used without proper configuration pushed first.
 func (p *Plugin) Init(cfg Configurer) error {
 	const op = errors.Op("headers_plugin_init")
@@ -127,7 +127,7 @@ func (p *Plugin) Middleware(next http.Handler) http.Handler {
 
 	// Define the http.HandlerFunc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if val, ok := r.Context().Value(utils.OtelTracerNameKey).(string); ok {
+		if val, ok := r.Context().Value(rrcontext.OtelTracerNameKey).(string); ok {
 			tp := trace.SpanFromContext(r.Context()).TracerProvider()
 			ctx, span := tp.Tracer(val, trace.WithSchemaURL(semconv.SchemaURL),
 				trace.WithInstrumentationVersion(otelhttp.Version())).

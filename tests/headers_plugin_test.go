@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/roadrunner-server/config/v4"
+	"github.com/roadrunner-server/config/v5"
 	"github.com/roadrunner-server/endure/v2"
 	"github.com/roadrunner-server/headers/v5"
-	httpPlugin "github.com/roadrunner-server/http/v4"
-	"github.com/roadrunner-server/logger/v4"
-	"github.com/roadrunner-server/server/v4"
+	httpPlugin "github.com/roadrunner-server/http/v5"
+	"github.com/roadrunner-server/logger/v5"
+	"github.com/roadrunner-server/server/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,7 +26,6 @@ func TestHeadersInit(t *testing.T) {
 	cfg := &config.Plugin{
 		Version: "2024.1.0",
 		Path:    "configs/.rr-headers-init.yaml",
-		Prefix:  "rr",
 	}
 
 	err := cont.RegisterAll(
@@ -92,7 +91,6 @@ func TestRequestHeaders(t *testing.T) {
 	cfg := &config.Plugin{
 		Version: "2024.1.0",
 		Path:    "configs/.rr-req-headers.yaml",
-		Prefix:  "rr",
 	}
 
 	err := cont.RegisterAll(
@@ -177,7 +175,6 @@ func TestResponseHeaders(t *testing.T) {
 	cfg := &config.Plugin{
 		Version: "2024.1.0",
 		Path:    "configs/.rr-res-headers.yaml",
-		Prefix:  "rr",
 	}
 
 	err := cont.RegisterAll(
@@ -263,7 +260,6 @@ func TestCORSHeaders(t *testing.T) {
 	cfg := &config.Plugin{
 		Version: "2023.2.0",
 		Path:    "configs/.rr-cors-headers.yaml",
-		Prefix:  "rr",
 	}
 
 	err := cont.RegisterAll(
@@ -332,7 +328,6 @@ func TestCORSHeadersRegex(t *testing.T) {
 	cfg := &config.Plugin{
 		Version: "2023.2.0",
 		Path:    "configs/.rr-cors-headers-regex.yaml",
-		Prefix:  "rr",
 	}
 
 	err := cont.RegisterAll(

@@ -3,12 +3,12 @@ module tests
 go 1.22.5
 
 require (
-	github.com/roadrunner-server/config/v4 v4.9.3
+	github.com/roadrunner-server/config/v5 v5.0.0
 	github.com/roadrunner-server/endure/v2 v2.4.5
 	github.com/roadrunner-server/headers/v5 v5.0.0
-	github.com/roadrunner-server/http/v4 v4.7.7
-	github.com/roadrunner-server/logger/v4 v4.4.5
-	github.com/roadrunner-server/server/v4 v4.8.5
+	github.com/roadrunner-server/http/v5 v5.0.0
+	github.com/roadrunner-server/logger/v5 v5.0.0
+	github.com/roadrunner-server/server/v5 v5.0.0
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -54,8 +54,9 @@ require (
 	github.com/roadrunner-server/api/v4 v4.15.0 // indirect
 	github.com/roadrunner-server/context v1.0.0 // indirect
 	github.com/roadrunner-server/errors v1.4.0 // indirect
+	github.com/roadrunner-server/events v1.0.0 // indirect
 	github.com/roadrunner-server/goridge/v3 v3.8.2 // indirect
-	github.com/roadrunner-server/sdk/v4 v4.8.0 // indirect
+	github.com/roadrunner-server/pool v1.0.0 // indirect
 	github.com/roadrunner-server/tcplisten v1.5.0 // indirect
 	github.com/rs/cors v1.11.0 // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
@@ -70,6 +71,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	github.com/zeebo/assert v1.3.1 // indirect
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 // indirect
 	go.opentelemetry.io/contrib/propagators/jaeger v1.28.0 // indirect
@@ -84,7 +86,7 @@ require (
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect

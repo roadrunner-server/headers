@@ -9,7 +9,7 @@ require (
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/rs/cors v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0
-	go.opentelemetry.io/contrib/propagators/jaeger v1.36.0
+	go.opentelemetry.io/contrib/propagators/jaeger v1.37.0
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/trace v1.37.0
 )

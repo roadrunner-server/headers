@@ -5,7 +5,7 @@ go 1.25
 toolchain go1.25.5
 
 require (
-	github.com/roadrunner-server/context v1.1.0
+	github.com/roadrunner-server/context v1.2.0
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/rs/cors v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.64.0

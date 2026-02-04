@@ -7,7 +7,7 @@ toolchain go1.25.6
 require (
 	github.com/roadrunner-server/config/v5 v5.1.9
 	github.com/roadrunner-server/endure/v2 v2.6.2
-	github.com/roadrunner-server/headers/v5 v5.1.9
+	github.com/roadrunner-server/headers/v5 v5.2.0
 	github.com/roadrunner-server/http/v5 v5.3.0
 	github.com/roadrunner-server/logger/v5 v5.1.9
 	github.com/roadrunner-server/server/v5 v5.2.10

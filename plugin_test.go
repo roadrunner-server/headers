@@ -90,6 +90,51 @@ func TestMiddleware_NoSpanWithoutOtelContext(t *testing.T) {
 	assert.Nil(t, headersSpan, "no span should be created without OtelTracerNameKey")
 }
 
+func TestSplitTrimmed(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want []string
+	}{
+		{
+			name: "single value",
+			in:   "GET",
+			want: []string{"GET"},
+		},
+		{
+			name: "methods with space after comma",
+			in:   "GET, POST",
+			want: []string{"GET", "POST"},
+		},
+		{
+			name: "headers with spaces around commas",
+			in:   "Cache-Control, Content-Type",
+			want: []string{"Cache-Control", "Content-Type"},
+		},
+		{
+			name: "no spaces preserves values",
+			in:   "GET,POST,PUT,DELETE",
+			want: []string{"GET", "POST", "PUT", "DELETE"},
+		},
+		{
+			name: "leading and trailing whitespace per element",
+			in:   "  GET ,\tPOST\t, PUT ",
+			want: []string{"GET", "POST", "PUT"},
+		},
+		{
+			name: "wildcard",
+			in:   "*",
+			want: []string{"*"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, splitTrimmed(tt.in))
+		})
+	}
+}
+
 func newTestPlugin() *Plugin {
 	return &Plugin{
 		cfg: &Config{

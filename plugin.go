@@ -1,8 +1,6 @@
 package headers
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -19,8 +17,11 @@ import (
 
 // PluginName contains default service name.
 const (
-	RootPluginName string = "http"
-	PluginName     string = "headers"
+	RootPluginName = "http"
+	PluginName     = "headers"
+
+	// configKey is the fully-qualified config section for this plugin.
+	configKey = RootPluginName + "." + PluginName
 )
 
 type Configurer interface {
@@ -48,11 +49,11 @@ func (p *Plugin) Init(cfg Configurer) error {
 		return errors.E(op, errors.Disabled)
 	}
 
-	if !cfg.Has(fmt.Sprintf("%s.%s", RootPluginName, PluginName)) {
+	if !cfg.Has(configKey) {
 		return errors.E(op, errors.Disabled)
 	}
 
-	err := cfg.UnmarshalKey(fmt.Sprintf("%s.%s", RootPluginName, PluginName), &p.cfg)
+	err := cfg.UnmarshalKey(configKey, &p.cfg)
 	if err != nil {
 		return errors.E(op, err)
 	}
@@ -68,9 +69,7 @@ func (p *Plugin) Init(cfg Configurer) error {
 		}
 
 		if p.cfg.CORS.AllowedOrigin != "" {
-			// trim all spaces
-			p.cfg.CORS.AllowedOrigin = strings.Trim(p.cfg.CORS.AllowedOrigin, " ")
-			opts.AllowedOrigins = strings.Split(p.cfg.CORS.AllowedOrigin, ",")
+			opts.AllowedOrigins = splitTrimmed(p.cfg.CORS.AllowedOrigin)
 		}
 
 		// if this option is set, the content of `AllowedOrigins` is ignored
@@ -80,27 +79,22 @@ func (p *Plugin) Init(cfg Configurer) error {
 			if err != nil {
 				return errors.E(op, err)
 			}
+			re := p.allowedOriginRegex
 			opts.AllowOriginFunc = func(origin string) bool {
-				return p.allowedOriginRegex.MatchString(origin)
+				return re.MatchString(origin)
 			}
 		}
 
 		if p.cfg.CORS.AllowedMethods != "" {
-			// trim all spaces
-			p.cfg.CORS.AllowedMethods = strings.Trim(p.cfg.CORS.AllowedMethods, " ")
-			opts.AllowedMethods = strings.Split(p.cfg.CORS.AllowedMethods, ",")
+			opts.AllowedMethods = splitTrimmed(p.cfg.CORS.AllowedMethods)
 		}
 
 		if p.cfg.CORS.AllowedHeaders != "" {
-			// trim all spaces
-			p.cfg.CORS.AllowedHeaders = strings.Trim(p.cfg.CORS.AllowedHeaders, " ")
-			opts.AllowedHeaders = strings.Split(p.cfg.CORS.AllowedHeaders, ",")
+			opts.AllowedHeaders = splitTrimmed(p.cfg.CORS.AllowedHeaders)
 		}
 
 		if p.cfg.CORS.ExposedHeaders != "" {
-			// trim all spaces
-			p.cfg.CORS.ExposedHeaders = strings.Trim(p.cfg.CORS.ExposedHeaders, " ")
-			opts.ExposedHeaders = strings.Split(p.cfg.CORS.ExposedHeaders, ",")
+			opts.ExposedHeaders = splitTrimmed(p.cfg.CORS.ExposedHeaders)
 		}
 
 		if p.cfg.CORS.MaxAge > 0 {
@@ -132,10 +126,10 @@ func (p *Plugin) Middleware(next http.Handler) http.Handler {
 
 		if val, ok := r.Context().Value(rrcontext.OtelTracerNameKey).(string); ok {
 			tp := trace.SpanFromContext(r.Context()).TracerProvider()
-			var ctx context.Context
-			ctx, span = tp.Tracer(val, trace.WithSchemaURL(semconv.SchemaURL),
+			ctx, sp := tp.Tracer(val, trace.WithSchemaURL(semconv.SchemaURL),
 				trace.WithInstrumentationVersion(otelhttp.Version)).
 				Start(r.Context(), PluginName, trace.WithSpanKind(trace.SpanKindInternal))
+			span = sp
 
 			// inject
 			p.prop.Inject(ctx, propagation.HeaderCarrier(r.Header))
@@ -164,4 +158,14 @@ func (p *Plugin) Middleware(next http.Handler) http.Handler {
 
 func (p *Plugin) Name() string {
 	return PluginName
+}
+
+// splitTrimmed splits a comma-separated string and trims whitespace from each
+// element, fixing per-element spaces that a single outer trim would miss.
+func splitTrimmed(s string) []string {
+	parts := strings.Split(s, ",")
+	for i, p := range parts {
+		parts[i] = strings.TrimSpace(p)
+	}
+	return parts
 }

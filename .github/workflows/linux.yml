@@ -59,18 +59,21 @@ jobs:
       - name: Install Go dependencies
         run: go mod download
 
+      - name: Run root module unit tests with coverage
+        run: |
+          mkdir ./tests/coverage-ci
+          go test -timeout 5m -v -race -cover -tags=debug -coverpkg=./... -coverprofile=./tests/coverage-ci/headers_unit.out -covermode=atomic ./...
+
       - name: Run golang tests with coverage
         run: |
           cd tests
-          mkdir ./coverage-ci
-
           go test -timeout 20m -v -race -cover -tags=debug -coverpkg=github.com/roadrunner-server/headers/v6/... -coverprofile=./coverage-ci/headers.out -covermode=atomic ./...
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v7
         with:
           name: coverage-headers
-          path: ./tests/coverage-ci/headers.out
+          path: ./tests/coverage-ci
 
   codecov:
     name: Upload codecov

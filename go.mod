@@ -5,7 +5,7 @@ go 1.27
 toolchain go1.27.1
 
 require (
-	github.com/roadrunner-server/context v1.3.0
+	github.com/roadrunner-server/context v1.4.0
 	github.com/roadrunner-server/errors v1.6.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.12.1
